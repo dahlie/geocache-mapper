@@ -1,0 +1,38 @@
+doctype html
+html
+  head
+    title Karttapisteet
+    link(rel='stylesheet', href='leaflet.css')
+    link(rel='stylesheet', href='css/bootstrap.min.css')
+    link(rel='stylesheet', href='css/style.css')
+  body
+    script(src='js/bundle.js')
+
+    .navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+      .container
+        .navbar-header
+        .collapse.navbar-collapse
+          ul.nav.navbar-nav
+            li
+              a(href='#', data-type='basic') Peruskartta
+            li
+              a(href='#', data-type='background') Taustakartta
+            li
+              a(href='#', data-type='orto') Ortoilmakuva
+            li
+              a(href='#', data-type='openStreetMap') OpenStreetMap
+
+    #map-container(role='main')
+      #map
+
+    #overlay
+      .container
+        .jumbotron
+          h2 Lue esitett&auml;v&auml;t kohteet
+          p (Vinkki: voit my&ouml;s raahata tiedoston dialogin p&auml;&auml;lle)
+          p
+            input#files(type='file', name='files[]')
+            a.btn.btn-primary.btn-long(type='file', name='files[]')
+              span.glyphicon.glyphicon-folder-open
+              span Valitse kohdetiedosto...
+
