@@ -12,45 +12,68 @@ markers       = { }
 
 $ ->
   createMap()
-  registerHandlers()
 
-  $('#search-results ul').on 'click', 'a', (e) ->
-    panTo $(e.currentTarget).data 'id'
+  # selecting target from list
+  $('#search-results ul').on 'click', 'a', (e) -> panTo $(e.currentTarget).data 'id'
 
-registerHandlers = ->
-  # navigation bar
-  $tabs = $ '.navbar .nav a'
-  $tabs.on 'click', (e) -> selectLayer e.target.dataset.type
+  # search update
+  $('#search input').on 'change paste keyup', _.throttle ((e) -> updateSearchResults targets, $(@).val()), 1000
 
-  # file
+  # layer change
+  $('.navbar .nav a').on 'click', (e) -> selectLayer e.target.dataset.type
+
+  # use our own 'read file' button
   $openFile = $ '#overlay .btn'
   $files    = $ '#overlay #files'
-
-  # register listener for read file button
   $openFile.on 'click', -> $files.click()
 
+  # user selected a file to read
   $('#overlay #files').on 'change', (e) ->
     file = e.target.files[0]
-    readFile file, (targets)->
-      drawMarkers targets
-      updateSearchResults targets
+    readFile file, (results) ->
+      targets = results
+
+      # create markers and hide overlay
+      markers = createMarkers targets
       hideOverlay()
 
-drawMarkers = (targets) ->
-  targets.forEach (t) ->
-    marker = new L.Marker t.location,
+      updateSearchResults targets, ''
+
+createMarkers = (targets) ->
+  ids     = _.pluck targets, 'id'
+  markers = _.map targets, (t) ->
+    new L.Marker t.location,
       riseOnHover: true
       title:       t.nimi
 
-    markers[t.id] = marker
-    marker.addTo map
+  _.forEach markers, (m) ->
+    #m.addClass '.hidden'
+    m.addTo map
 
-updateSearchResults = (targets) ->
+  _.zipObject ids, markers
+
+updateSearchResults = (targets, search) ->
+  console.log 'searching', search
+  show = (target) -> $(markers[target.id]._icon).removeClass '.hidden'
+  hide = (target) -> $(markers[target.id]._icon).addClass '.hidden'
+
+  # first hide all markers
+  _.forEach targets, hide
+
+  # then show markers that match search criteria
+  visible = _.filter targets, matches search
+  _.forEach visible, show
+
+  # update results to list
   directives =
     'list-group-item':
       'data-id': -> @.id
 
-  $('#search-results ul').render targets, directives
+  $('#search-results ul').render visible, directives
+
+matches = (search) -> (target) ->
+  console.log target, search
+  true
 
 hideOverlay = ->
   $('#overlay').hide()
