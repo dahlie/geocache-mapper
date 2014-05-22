@@ -15,7 +15,8 @@
   "author": "",
   "dependencies": {
     "coffee-script": "~1.7.1",
-    "lodash": "^2.4.1"
+    "lodash": "^2.4.1",
+    "underscore.string": "^2.3.3"
   },
   "devDependencies": {
     "gulp-rename": "~0.2.1",

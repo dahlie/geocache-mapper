@@ -1,9 +1,12 @@
 $ 			     = require 'jquery'
 _            = require 'lodash'
+_str         = require 'underscore.string'
 leaflet      = require 'leaflet'
 transparency = require 'transparency'
 
 readFile     = require './filereader.coffee'
+
+_.mixin _str.exports()
 
 map           = null
 layerControl  = null
@@ -17,7 +20,7 @@ $ ->
   $('#search-results ul').on 'click', 'a', (e) -> panTo $(e.currentTarget).data 'id'
 
   # search update
-  $('#search input').on 'change paste keyup', _.throttle ((e) -> updateSearchResults targets, $(@).val()), 1000
+  $('#search input').on 'change paste keyup', _.throttle ((e) -> updateSearchResults targets, $(@).val().toLowerCase()), 200
 
   # layer change
   $('.navbar .nav a').on 'click', (e) -> selectLayer e.target.dataset.type
@@ -72,8 +75,9 @@ updateSearchResults = (targets, search) ->
   $('#search-results ul').render visible, directives
 
 matches = (search) -> (target) ->
-  console.log target, search
-  true
+  _.isEmpty(search) or
+  _str.include(target.nimi.toLowerCase(), search) or
+  _str.include(target.kuvaus.toLowerCase(), search)
 
 hideOverlay = ->
   $('#overlay').hide()
