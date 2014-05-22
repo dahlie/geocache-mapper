@@ -45,20 +45,19 @@ $ ->
 createMarkers = (targets) ->
   ids     = _.pluck targets, 'id'
   markers = _.map targets, (t) ->
-    new L.Marker t.location,
+    new L.Marker(t.location,
       riseOnHover: true
-      title:       t.nimi
-
-  _.forEach markers, (m) ->
-    #m.addClass '.hidden'
-    m.addTo map
+      title:       t.nimi).addTo map
 
   _.zipObject ids, markers
 
 updateSearchResults = (targets, search) ->
-  console.log 'searching', search
-  show = (target) -> $(markers[target.id]._icon).removeClass '.hidden'
-  hide = (target) -> $(markers[target.id]._icon).addClass '.hidden'
+  show = (target) ->
+    $(markers[target.id]._icon).removeClass 'hidden'
+    $(markers[target.id]._shadow).removeClass 'hidden'
+  hide = (target) ->
+    $(markers[target.id]._icon).addClass 'hidden'
+    $(markers[target.id]._shadow).addClass 'hidden'
 
   # first hide all markers
   _.forEach targets, hide
@@ -81,6 +80,7 @@ matches = (search) -> (target) ->
 
 hideOverlay = ->
   $('#overlay').hide()
+  $('#search-results').show()
 
 panTo = (id) ->
   map.panTo markers[id].getLatLng()
