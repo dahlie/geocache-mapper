@@ -1,55 +1,62 @@
-$ 			 = require 'jquery'
-_        = require 'lodash'
-proj4    = require 'proj4'
-leaflet  = require 'leaflet'
+$ 			     = require 'jquery'
+_            = require 'lodash'
+leaflet      = require 'leaflet'
+transparency = require 'transparency'
+
+readFile     = require './filereader.coffee'
 
 map           = null
 layerControl  = null
 targets       = null
-
-ETRS  = '+proj=utm +zone=35 +ellps=GRS80 +units=m +no_defs'
-WGS84 = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs '
+markers       = { }
 
 $ ->
   createMap()
-  registerLayerHandlers()
-  registerFileHandler()
+  registerHandlers()
 
-registerLayerHandlers = ->
+  $('#search-results ul').on 'click', 'a', (e) ->
+    panTo $(e.currentTarget).data 'id'
+
+registerHandlers = ->
+  # navigation bar
   $tabs = $ '.navbar .nav a'
+  $tabs.on 'click', (e) -> selectLayer e.target.dataset.type
 
-  $tabs.on 'click', (e) ->
-    selectLayer e.target.dataset.type
-
-registerFileHandler = ->
+  # file
   $openFile = $ '#overlay .btn'
   $files    = $ '#overlay #files'
 
   # register listener for read file button
   $openFile.on 'click', -> $files.click()
 
-  $('#overlay #files').on 'change', (e) -> readFile e.target.files[0]
-
-readFile = (file) ->
-    reader = new FileReader()
-    reader.onload = (e) ->
-      targets = eval e.target.result
+  $('#overlay #files').on 'change', (e) ->
+    file = e.target.files[0]
+    readFile file, (targets)->
       drawMarkers targets
+      updateSearchResults targets
       hideOverlay()
-
-    reader.readAsText file
 
 drawMarkers = (targets) ->
   targets.forEach (t) ->
-    location = proj4 ETRS, WGS84, [t.itainen, t.pohjoinen]
-    marker = new L.Marker location.reverse(),
+    marker = new L.Marker t.location,
       riseOnHover: true
       title:       t.nimi
 
+    markers[t.id] = marker
     marker.addTo map
+
+updateSearchResults = (targets) ->
+  directives =
+    'list-group-item':
+      'data-id': -> @.id
+
+  $('#search-results ul').render targets, directives
 
 hideOverlay = ->
   $('#overlay').hide()
+
+panTo = (id) ->
+  map.panTo markers[id].getLatLng()
 
 createMap = ->
   L.Icon.Default.imagePath = '/images'

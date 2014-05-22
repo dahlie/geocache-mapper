@@ -41,7 +41,8 @@
   "browser": {
     "jquery": "./vendor/jquery/dist/jquery.js",
     "proj4": "./vendor/proj4/dist/proj4.js",
-    "leaflet": "./vendor/leaflet/leaflet.js"
+    "leaflet": "./vendor/leaflet/leaflet.js",
+    "transparency": "./vendor/transparency/dist/transparency.min.js"
   },
   "browserify-shim": {
     "jquery": "$",

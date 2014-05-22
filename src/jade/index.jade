@@ -25,6 +25,19 @@ html
     #map-container(role='main')
       #map
 
+    #search-wrapper
+      #search
+        .input-group
+          span.input-group-addon
+            span.glyphicon.glyphicon-search
+          input.form-control(type='text', placeholder='Hae kohteita')
+
+      #search-results
+        ul.list-group
+          a.list-group-item(href='#')
+            h4.nimi
+            p.kuvaus
+
     #overlay
       .container
         .jumbotron
