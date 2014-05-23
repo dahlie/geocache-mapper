@@ -11,6 +11,7 @@ _.mixin _str.exports()
 
 map                = null
 layers             = null
+currentLayer       = null
 overlays           = null
 targets            = null
 markers            = { }
@@ -172,8 +173,10 @@ createMap = ->
     zoomControl: false
 
   new L.Control.Zoom(position: 'bottomright').addTo map
-  layers.basic.addTo map
+  selectLayer 'basic'
 
-selectLayer = (layer) ->
-  $input = $ ".leaflet-control-layers label:contains(#{layer}) input"
-  $input.click()
+selectLayer = (name) ->
+  layer = layers[name]
+  map.addLayer layer, true 
+  map.removeLayer currentLayer if currentLayer?
+  currentLayer = layer
