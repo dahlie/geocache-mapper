@@ -1,8 +1,9 @@
-$ 			     = require 'jquery'
-_            = require 'lodash'
-_str         = require 'underscore.string'
-leaflet      = require 'leaflet'
-transparency = require 'transparency'
+$ 			      = require 'jquery'
+_             = require 'lodash'
+_str          = require 'underscore.string'
+leaflet       = require 'leaflet'
+leafletlabel  = require 'leaflet.label'
+transparency  = require 'transparency'
 
 readFile     = require './filereader.coffee'
 
@@ -45,9 +46,9 @@ $ ->
 createMarkers = (targets) ->
   ids     = _.pluck targets, 'id'
   markers = _.map targets, (t) ->
-    new L.Marker(t.location,
-      riseOnHover: true
-      title:       t.nimi).addTo map
+    new L.Marker(t.location, riseOnHover: true, title: t.nimi)
+      .bindLabel(t.nimi)
+      .addTo(map)
 
   _.zipObject ids, markers
 

@@ -62,6 +62,8 @@ gulp.task 'assets', ->
     .src(['src/assets/**/*.*',
           'vendor/leaflet/leaflet.css',
           'vendor/leaflet/images*/*.*',
+          'vendor/Leaflet.label/dist/leaflet.label.css',
+          'vendor/Leaflet.label/dist/images*/*.*',
           'vendor/bootstrap/dist/css*/*.min.css',
           'vendor/bootstrap/dist/fonts*/*.*'])
     .pipe gulp.dest 'public/'
