@@ -64,6 +64,8 @@ createMarkers = (targets) ->
         .bindLabel(t.nimi)
         .bindPopup(createPopupFor(t), minWidth: 500, maxWidth: 500)
         .addTo(group)
+        .on 'click', (e) -> map.panTo e.target.getLatLng()
+
 
     group.addTo map
     acc[key] = group
