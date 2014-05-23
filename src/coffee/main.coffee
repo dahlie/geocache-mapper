@@ -66,7 +66,7 @@ createMarkers = (targets) ->
 
   # by default all categories are selected
   selectedCategories = _.keys overlays
-  $('#categories ul').render selectedCategories, 'category-name': text: -> @.value
+  $('#categories').show().find('ul').render selectedCategories, 'category-name': text: -> @.value
   $('#categories ul a').on 'click', toggleLayer
   zipped
 
