@@ -138,6 +138,7 @@ hideOverlay = ->
 
 panTo = (id) ->
   map.panTo markers[id].getLatLng()
+  markers[id].openPopup()
 
 createMap = ->
   L.Icon.Default.imagePath = '/images'
