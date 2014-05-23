@@ -17,6 +17,7 @@ markers            = { }
 selectedCategories = null
 
 $search            = null
+$popupTemplate     = null
 
 $ ->
   createMap()
@@ -27,6 +28,8 @@ $ ->
   # search update
   $search = $ '#search input'
   $search.on 'change paste keyup', _.throttle updateSearchResults, 200
+
+  $popupTemplate = $ '#popup-template > div'
 
   # layer change
   $('.navbar .nav a').on 'click', (e) -> selectLayer e.target.dataset.type
@@ -57,8 +60,11 @@ createMarkers = (targets) ->
   overlays   = _.reduce _.keys(categories), (acc, key) ->
     group = new L.LayerGroup()
     _.forEach categories[key], (t) ->
-      marker = new L.Marker(t.location, riseOnHover: true).bindLabel(t.nimi).addTo(group)
-      zipped[t.id] = marker
+      zipped[t.id] = new L.Marker(t.location, riseOnHover: true)
+        .bindLabel(t.nimi)
+        .bindPopup(createPopupFor(t), minWidth: 500, maxWidth: 500)
+        .addTo(group)
+
     group.addTo map
     acc[key] = group
     acc
@@ -69,6 +75,14 @@ createMarkers = (targets) ->
   $('#categories').show().find('ul').render selectedCategories, 'category-name': text: -> @.value
   $('#categories ul a').on 'click', toggleLayer
   zipped
+
+createPopupFor = (target) ->
+  console.log target
+  popup = $popupTemplate.clone().show()
+  popup.render target,
+    'lat': text: -> _.numberFormat @.location[0], 4
+    'lng': text: -> _.numberFormat @.location[1], 4
+  popup[0]
 
 toggleLayer = (e) ->
   name = e.currentTarget.text

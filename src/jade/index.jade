@@ -26,21 +26,45 @@ html
     #map-container(role='main')
       #map
 
-    #search-wrapper
-      #search
-        .input-group
-          span.input-group-addon
-            span.glyphicon.glyphicon-search
-          input.form-control(type='text', placeholder='Hae kohteita')
+    #popup-template(style='display: none;')
+      .panel.panel-default
+        .panel-heading
+          span.nimi
+          span.lat
+          span.lng
+        .panel-body
+          p.kuvaus
 
-      #search-results(style='display: none;')
+          .field-container.container-fluid
+            .row
+              label.col-md-3 Paikkakunta
+              span.col-md-3.paikkakunta
+            .row
+              label.col-md-3 Tarkenne1
+              span.col-md-3.tarkenne1
+              label.col-md-3 Tarkenne2
+              span.col-md-3.tarkenne2
+            .row
+              label.col-md-3 Luokittelu
+              span.col-md-3.luokittelu
+              label.col-md-3 Varmuus
+              span.col-md-3.varmuus
+
+    #search
+      .input-group
+        span.input-group-addon
+          span.glyphicon.glyphicon-search
+        input.form-control(type='text', placeholder='Hae kohteita')
+
+    #search-results(style='display: none;')
+      .wrapper
         ul.list-group
           a.list-group-item(href='#')
             span.nimi
 
-      #no-search-results(style='display: none;')
-        ul.list-group
-          span.list-group-item Ei hakutuloksia
+    #no-search-results(style='display: none;')
+      ul.list-group
+        span.list-group-item Ei hakutuloksia
 
     #categories(style='display: none;')
       ul.list-group

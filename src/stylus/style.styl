@@ -29,24 +29,70 @@ body, html
     label
       font-weight 400
 
-#search-wrapper
+  .leaflet-popup-content-wrapper
+    padding 0px
+    .leaflet-popup-content
+      margin 0px
+
+      .panel
+        border none
+        margin-bottom 0px
+        .container-fluid
+          margin 0
+          padding 0
+
+        .lat
+        .lng
+          color #888
+
+        .lat
+          margin-left 15px
+        .lat:before
+          content: '('
+        .lat:after
+          content: ' \00b0 N'
+        .lng:before
+          content: ', '
+        .lng:after
+          content: ' \00b0 E)'
+
+
+
+.list-group
+  margin-bottom 0
+
+#search
   position fixed
   top 61px
   left 10px
-  height 82%
+  box-shadow 0 1px 5px rgba(0, 0, 0, 0.65)
 
 #search
 #search-results
 #no-search-results
   width 350px
   border-radius 4px
-  box-shadow 0 1px 5px rgba(0, 0, 0, 0.65)
 
 #search-results
 #no-search-results
-  margin-top 10px
+  position fixed
+  top 105px
+  left 10px
+
+#search-results
+  bottom 15px
+  pointer-events none
+
+  .wrapper
+    box-shadow 0 1px 5px rgba(0, 0, 0, 0.65)
+    max-height 100%
+    overflow-y auto
+
+    .list-group-item
+      pointer-events auto
 
 #no-search-results
+  box-shadow 0 1px 5px rgba(0, 0, 0, 0.65)
   .list-group-item
     color #888
 
@@ -55,9 +101,6 @@ body, html
   top 61px
   right 10px
   box-shadow 0 1px 5px rgba(0, 0, 0, 0.65)
-
-  .list-group
-    margin-bottom 0
 
   .list-group-item
     .glyphicon
