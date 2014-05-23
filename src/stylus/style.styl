@@ -37,28 +37,27 @@ body, html
 
 #search
 #search-results
+#no-search-results
   width 350px
   border-radius 4px
   box-shadow 0 1px 5px rgba(0, 0, 0, 0.65)
 
 #search-results
+#no-search-results
   margin-top 10px
 
-  // .list-group-item
-  //   padding 3px 10px
-
-  //   h4
-  //     font-size 14px
-  //     margin-top 5px
-  //     margin-bottom 3px
-  //   p
-  //     margin 0 0 5px
+#no-search-results
+  .list-group-item
+    color #888
 
 #categories
   position fixed
   top 61px
   right 10px
   box-shadow 0 1px 5px rgba(0, 0, 0, 0.65)
+
+  .list-group
+    margin-bottom 0
 
   .list-group-item
     .glyphicon

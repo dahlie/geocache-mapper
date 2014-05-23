@@ -9,11 +9,14 @@ readFile     = require './filereader.coffee'
 
 _.mixin _str.exports()
 
-map           = null
-layers        = null
-overlays      = null
-targets       = null
-markers       = { }
+map                = null
+layers             = null
+overlays           = null
+targets            = null
+markers            = { }
+selectedCategories = null
+
+$search            = null
 
 $ ->
   createMap()
@@ -22,7 +25,8 @@ $ ->
   $('#search-results ul').on 'click', 'a', (e) -> panTo $(e.currentTarget).data 'id'
 
   # search update
-  $('#search input').on 'change paste keyup', _.throttle ((e) -> updateSearchResults targets, $(@).val().toLowerCase()), 200
+  $search = $ '#search input'
+  $search.on 'change paste keyup', _.throttle updateSearchResults, 200
 
   # layer change
   $('.navbar .nav a').on 'click', (e) -> selectLayer e.target.dataset.type
@@ -42,7 +46,7 @@ $ ->
       markers = createMarkers targets
       hideOverlay()
 
-      updateSearchResults targets, ''
+      updateSearchResults targets, '', selectedCategories
 
 createMarkers = (targets) ->
   ids     = _.pluck targets, 'id'
@@ -60,19 +64,27 @@ createMarkers = (targets) ->
     acc
   , { }
 
-  $('#categories ul').render _.keys(overlays), 'category-name': text: -> @.value
+  # by default all categories are selected
+  selectedCategories = _.keys overlays
+  $('#categories ul').render selectedCategories, 'category-name': text: -> @.value
   $('#categories ul a').on 'click', toggleLayer
   zipped
 
 toggleLayer = (e) ->
   name = e.currentTarget.text
   $(@).toggleClass 'selected'
+
+  # show or hide categories
   if map.hasLayer overlays[name]
+    _.pull selectedCategories, name
     map.removeLayer overlays[name]
   else
     map.addLayer overlays[name]
+    selectedCategories.push name
 
-updateSearchResults = (targets, search) ->
+  updateSearchResults()
+
+updateSearchResults = ->
   show = (target) ->
     $(markers[target.id]._icon).removeClass 'hidden'
     $(markers[target.id]._shadow).removeClass 'hidden'
@@ -84,7 +96,7 @@ updateSearchResults = (targets, search) ->
   _.forEach targets, hide
 
   # then show markers that match search criteria
-  visible = _.filter targets, matches search
+  visible = _.filter targets, matches $search.val().toLowerCase(), selectedCategories
   _.forEach visible, show
 
   # update results to list
@@ -92,9 +104,16 @@ updateSearchResults = (targets, search) ->
     'list-group-item':
       'data-id': -> @.id
 
-  $('#search-results ul').render visible, directives
+  if _.isEmpty visible
+    $('#no-search-results').show()
+    $('#search-results ul').hide()
+  else
+    $('#no-search-results').hide()
+    $('#search-results ul').show().render visible, directives
 
-matches = (search) -> (target) ->
+matches = (search, categories) -> (target) ->
+  return false unless _.contains categories, target.luokittelu
+
   _.isEmpty(search) or
   _str.include(target.nimi.toLowerCase(), search) or
   _str.include(target.kuvaus.toLowerCase(), search)
