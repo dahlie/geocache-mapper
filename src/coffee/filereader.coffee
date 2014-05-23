@@ -9,6 +9,7 @@ module.exports = (file, cb) ->
   reader.onload = (e) ->
     targets = _.map JSON.parse(e.target.result), (t) ->
       t.id       = _.uniqueId()
+      t.nimi     = t.nimi or 'tuntematon'
       t.location = proj4(ETRS, WGS84, [t.itainen, t.pohjoinen]).reverse()
       t
 

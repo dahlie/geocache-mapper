@@ -36,8 +36,13 @@ html
       #search-results(style='display: none;')
         ul.list-group
           a.list-group-item(href='#')
-            h4.nimi
-            //- p.kuvaus
+            span.nimi
+
+    #categories
+      ul.list-group
+        a.list-group-item.selected(href='#')
+          span.glyphicon.glyphicon-ok
+          span.category-name
 
     #overlay
       .container

@@ -10,7 +10,8 @@ readFile     = require './filereader.coffee'
 _.mixin _str.exports()
 
 map           = null
-layerControl  = null
+layers        = null
+overlays      = null
 targets       = null
 markers       = { }
 
@@ -45,12 +46,31 @@ $ ->
 
 createMarkers = (targets) ->
   ids     = _.pluck targets, 'id'
-  markers = _.map targets, (t) ->
-    new L.Marker(t.location, riseOnHover: true, title: t.nimi)
-      .bindLabel(t.nimi)
-      .addTo(map)
+  zipped  = {}
 
-  _.zipObject ids, markers
+  # group markers by category and add them on separate layers
+  categories = _.groupBy targets, 'luokittelu'
+  overlays   = _.reduce _.keys(categories), (acc, key) ->
+    group = new L.LayerGroup()
+    _.forEach categories[key], (t) ->
+      marker = new L.Marker(t.location, riseOnHover: true).bindLabel(t.nimi).addTo(group)
+      zipped[t.id] = marker
+    group.addTo map
+    acc[key] = group
+    acc
+  , { }
+
+  $('#categories ul').render _.keys(overlays), 'category-name': text: -> @.value
+  $('#categories ul a').on 'click', toggleLayer
+  zipped
+
+toggleLayer = (e) ->
+  name = e.currentTarget.text
+  $(@).toggleClass 'selected'
+  if map.hasLayer overlays[name]
+    map.removeLayer overlays[name]
+  else
+    map.addLayer overlays[name]
 
 updateSearchResults = (targets, search) ->
   show = (target) ->
@@ -111,12 +131,12 @@ createMap = ->
 
   map = L.map 'map',
     center:  new L.LatLng(61.5000, 23.7667)
-    zoom:    9
-    maxZoom: 18
+    zoom:        9
+    maxZoom:     18
+    zoomControl: false
 
-  layerControl = L.control.layers layers, null, collapsed: false
-  layerControl.addTo map
-  selectLayer 'basic'
+  new L.Control.Zoom(position: 'bottomright').addTo map
+  layers.basic.addTo map
 
 selectLayer = (layer) ->
   $input = $ ".leaflet-control-layers label:contains(#{layer}) input"
