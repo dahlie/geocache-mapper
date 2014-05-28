@@ -80,7 +80,6 @@ createMarkers = (targets) ->
   zipped
 
 createPopupFor = (target) ->
-  console.log target
   popup = $popupTemplate.clone().show()
   popup.render target,
     'lat': text: -> _.numberFormat @.location[0], 4
@@ -173,7 +172,7 @@ createMap = ->
     zoomControl: false
 
   new L.Control.Zoom(position: 'bottomright').addTo map
-  selectLayer 'basic'
+  selectLayer 'openStreetMap'
 
 selectLayer = (name) ->
   layer = layers[name]
