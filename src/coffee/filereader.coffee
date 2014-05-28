@@ -1,4 +1,5 @@
 _      = require 'lodash'
+q      = require 'q'
 proj4  = require 'proj4'
 
 ETRS  = '+proj=utm +zone=35 +ellps=GRS80 +units=m +no_defs'
@@ -25,8 +26,9 @@ read = (cb) -> (file) ->
 readJSON = read (file) -> JSON.parse file
 readCSV  = read (file) -> _.map file.split('\n'), (line) -> _.zipObject FIELDS, line.split ';'
 
-module.exports = (file, cb) ->
-  reader = new FileReader()
+module.exports = (file) ->
+  reader   = new FileReader()
+  deferred = q.defer()
   
   reader.onload = (e) ->
     data  = readJSON e.target.result
@@ -38,7 +40,9 @@ module.exports = (file, cb) ->
       t.location = proj4(ETRS, WGS84, [t.itainen, t.pohjoinen]).reverse()
       t
 
-    cb _.sortBy targets, 'nimi'
+    deferred.resolve _.sortBy targets, 'nimi'
 
   reader.readAsText file
+
+  deferred.promise
 

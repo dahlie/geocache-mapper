@@ -1,6 +1,7 @@
 $ 			      = require 'jquery'
 _             = require 'lodash'
 _str          = require 'underscore.string'
+q             = require 'q'
 leaflet       = require 'leaflet'
 leafletlabel  = require 'leaflet.label'
 transparency  = require 'transparency'
@@ -41,10 +42,25 @@ $ ->
   $openFile.on 'click', -> $files.click()
 
   # user selected a file to read
-  $('#overlay #files').on 'change', (e) ->
-    file = e.target.files[0]
-    readFile file, (results) ->
-      targets = results
+  $('#overlay #files').on 'change', (e) -> readFiles e.target.files    
+
+  # drag'n'drop support
+  dropZone = $('body')
+  dropZone.on 'dragover', (e) ->
+    e.stopPropagation()
+    e.preventDefault()
+    e.originalEvent.dataTransfer.dropEffect = 'copy'
+
+  dropZone.on 'drop', (e) -> 
+    console.log e
+    e.stopPropagation()
+    e.preventDefault()
+    readFiles e.originalEvent.dataTransfer.files
+
+readFiles = (files) ->
+  q.all(_.map files, readFile)
+   .then (results) ->
+      targets = _.flatten results
 
       # create markers and hide overlay
       markers = createMarkers targets

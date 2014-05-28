@@ -16,7 +16,8 @@
   "dependencies": {
     "coffee-script": "~1.7.1",
     "lodash": "^2.4.1",
-    "underscore.string": "^2.3.3"
+    "underscore.string": "^2.3.3",
+    "q": "^1.0.1"
   },
   "devDependencies": {
     "gulp-rename": "~0.2.1",
