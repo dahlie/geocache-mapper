@@ -52,7 +52,6 @@ $ ->
     e.originalEvent.dataTransfer.dropEffect = 'copy'
 
   dropZone.on 'drop', (e) -> 
-    console.log e
     e.stopPropagation()
     e.preventDefault()
     readFiles e.originalEvent.dataTransfer.files
@@ -60,7 +59,12 @@ $ ->
 readFiles = (files) ->
   q.all(_.map files, readFile)
    .then (results) ->
-      targets = _.flatten results
+      targets = 
+        _.chain(results)
+         .flatten()
+         .uniq((t) -> t.nimi)
+         .sortBy('nimi')
+         .value()
 
       # create markers and hide overlay
       markers = createMarkers targets

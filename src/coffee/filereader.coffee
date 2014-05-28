@@ -40,7 +40,7 @@ module.exports = (file) ->
       t.location = proj4(ETRS, WGS84, [t.itainen, t.pohjoinen]).reverse()
       t
 
-    deferred.resolve _.sortBy targets, 'nimi'
+    deferred.resolve targets
 
   reader.readAsText file
 
