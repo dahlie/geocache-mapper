@@ -107,17 +107,26 @@ createPopupFor = (target) ->
   popup[0]
 
 toggleLayer = (e) ->
+  e.preventDefault()
   name = e.currentTarget.text
-  $(@).toggleClass 'selected'
 
-  # show or hide categories
-  if map.hasLayer overlays[name]
-    _.pull selectedCategories, name
-    map.removeLayer overlays[name]
-  else
+  if e.shiftKey
+    $(@).addClass('selected').siblings().removeClass('selected')
+    _.forEach _.without(selectedCategories, name), (name) -> map.removeLayer overlays[name]
+    selectedCategories = [name]
     map.addLayer overlays[name]
-    selectedCategories.push name
+  else
+    $(@).toggleClass 'selected'
 
+    # show or hide categories
+    if map.hasLayer overlays[name]
+      _.pull selectedCategories, name
+      map.removeLayer overlays[name]
+    else
+      map.addLayer overlays[name]
+      selectedCategories.push name
+
+  console.log 'selectedCategories', selectedCategories
   updateSearchResults()
 
 updateSearchResults = ->
