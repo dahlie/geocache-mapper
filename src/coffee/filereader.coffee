@@ -13,6 +13,7 @@ FIELDS = [
   'tarkenne2'
   'luokittelu'
   'varmuus'
+  'kiinnostavuus'
   'nimi'
   'kuvaus'
 ]
