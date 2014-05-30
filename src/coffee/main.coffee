@@ -81,7 +81,15 @@ createMarkers = (targets) ->
   overlays   = _.reduce _.keys(categories), (acc, key) ->
     group = new L.LayerGroup()
     _.forEach categories[key], (t) ->
-      zipped[t.id] = new L.Marker(t.location, riseOnHover: true)
+      name = if t.kiinnostavuus then "#{_.capitalize(_.slugify key)}_#{_.pad t.kiinnostavuus, 2, '0'}" else '00'
+
+      icon  = new L.Icon
+        iconUrl:    "/images/#{name}.png"
+        iconSize:    if t.kiinnostavuus then [29, 29] else [9, 9]
+        iconAnchor:  if t.kiinnostavuus then [14, 14] else [4, 4]
+        popupAnchor: if t.kiinnostavuus then [0, -15] else [0, -5]
+
+      zipped[t.id] = new L.Marker(t.location, riseOnHover: true, icon: icon)
         .bindLabel(t.nimi)
         .bindPopup(createPopupFor(t), minWidth: 500, maxWidth: 500)
         .addTo(group)
@@ -126,7 +134,6 @@ toggleLayer = (e) ->
       map.addLayer overlays[name]
       selectedCategories.push name
 
-  console.log 'selectedCategories', selectedCategories
   updateSearchResults()
 
 updateSearchResults = ->
