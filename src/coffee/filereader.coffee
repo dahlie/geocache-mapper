@@ -16,6 +16,9 @@ FIELDS = [
   'kiinnostavuus'
   'nimi'
   'kuvaus'
+  'alkukulma',
+  'loppukulma',
+  'sade'
 ]
 
 read = (cb) -> (file) ->

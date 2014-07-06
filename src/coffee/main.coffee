@@ -1,12 +1,13 @@
-$ 			      = require 'jquery'
-_             = require 'lodash'
-_str          = require 'underscore.string'
-q             = require 'q'
-leaflet       = require 'leaflet'
-leafletlabel  = require 'leaflet.label'
-transparency  = require 'transparency'
+$ 			         = require 'jquery'
+_                = require 'lodash'
+_str             = require 'underscore.string'
+q                = require 'q'
+leaflet          = require 'leaflet'
+leafletlabel     = require 'leaflet.label'
+leafletSemicirle = require 'leaflet.semicircle'
+transparency     = require 'transparency'
 
-readFile     = require './filereader.coffee'
+readFile         = require './filereader.coffee'
 
 _.mixin _str.exports()
 
@@ -83,18 +84,31 @@ createMarkers = (targets) ->
     _.forEach categories[key], (t) ->
       name = if t.kiinnostavuus then "#{_.capitalize(_.slugify key)}_#{_.pad t.kiinnostavuus, 2, '0'}" else '00'
 
-      icon  = new L.Icon
+      icon  = L.icon
         iconUrl:    "/images/#{name}.png"
         iconSize:    if t.kiinnostavuus then [29, 29] else [9, 9]
         iconAnchor:  if t.kiinnostavuus then [14, 14] else [4, 4]
         popupAnchor: if t.kiinnostavuus then [0, -15] else [0, -5]
+    
+      semicircle = null      
 
-      zipped[t.id] = new L.Marker(t.location, riseOnHover: true, icon: icon)
+      # show semicirle around the icon if start angle has been defined      
+      unless _.isEmpty t.alkukulma
+        semicircle = L.circle t.location, t.sade * 1000,
+            startAngle: t.alkukulma
+            stopAngle:  t.loppukulma
+            #clickable:  false 
+            stroke:     false
+        semicircle.addTo(group)
+
+      zipped[t.id] = L.marker(t.location, riseOnHover: true, icon: icon)
         .bindLabel(t.nimi)
         .bindPopup(createPopupFor(t), minWidth: 500, maxWidth: 500)
         .addTo(group)
         .on 'click', (e) -> map.panTo e.target.getLatLng()
 
+      zipped[t.id]._semicircle = semicircle
+      zipped[t.id]
 
     group.addTo map
     acc[key] = group
@@ -137,12 +151,16 @@ toggleLayer = (e) ->
   updateSearchResults()
 
 updateSearchResults = ->
+  # for some reason .addClass() and .removeClass() don't work
+  # on semicircle path.
   show = (target) ->
     $(markers[target.id]._icon).removeClass 'hidden'
     $(markers[target.id]._shadow).removeClass 'hidden'
+    $(markers[target.id]._semicircle?._path).attr 'class', ''      
   hide = (target) ->
     $(markers[target.id]._icon).addClass 'hidden'
     $(markers[target.id]._shadow).addClass 'hidden'
+    $(markers[target.id]._semicircle?._path).attr 'class', 'hidden'
 
   # first hide all markers
   _.forEach targets, hide
